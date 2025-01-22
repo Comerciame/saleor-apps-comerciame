@@ -4,6 +4,7 @@ import { fromPromise, fromThrowable, ok, ResultAsync } from "neverthrow";
 import { BaseError } from "../../../errors";
 import { racePromise } from "../../../lib/race-promise";
 import { createLogger } from "../../../logger";
+import { saleorApp } from "../../../saleor-app";
 import { SmtpConfig } from "./smtp-config-schema";
 
 /*

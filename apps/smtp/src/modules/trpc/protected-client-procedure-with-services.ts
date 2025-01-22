@@ -1,11 +1,11 @@
 import { createSettingsManager } from "../../lib/metadata-manager";
+import { createLogger } from "../../logger";
+import { FeatureFlagService } from "../feature-flag-service/feature-flag-service";
 import { SmtpConfigurationService } from "../smtp/configuration/smtp-configuration.service";
 import { SmtpMetadataManager } from "../smtp/configuration/smtp-metadata-manager";
 import { syncWebhookStatus } from "../webhook-management/sync-webhook-status";
-import { protectedClientProcedure } from "./protected-client-procedure";
 import { WebhookManagementService } from "../webhook-management/webhook-management-service";
-import { FeatureFlagService } from "../feature-flag-service/feature-flag-service";
-import { createLogger } from "../../logger";
+import { protectedClientProcedure } from "./protected-client-procedure";
 
 const logger = createLogger("protectedWithConfigurationServices middleware");
 
@@ -29,7 +29,7 @@ export const protectedWithConfigurationServices = protectedClientProcedure.use(
 
     const smtpConfigurationService = new SmtpConfigurationService({
       metadataManager: new SmtpMetadataManager(
-        createSettingsManager(ctx.apiClient, ctx.appId!),
+        createSettingsManager(ctx.apiClient, ctx.appId! as string),
         ctx.saleorApiUrl,
       ),
       featureFlagService,
@@ -43,12 +43,13 @@ export const protectedWithConfigurationServices = protectedClientProcedure.use(
     });
 
     if (meta?.updateWebhooks) {
-      logger.debug("Updating webhooks");
+      logger.debug("Updating webhooks 2", ctx);
 
       const webhookManagementService = new WebhookManagementService({
         appBaseUrl: ctx.baseUrl,
         client: ctx.apiClient,
         featureFlagService: featureFlagService,
+        appId: ctx.appId as string,
       });
 
       await syncWebhookStatus({

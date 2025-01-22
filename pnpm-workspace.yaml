@@ -2,3 +2,5 @@ packages:
   - "apps/*"
   - "packages/*"
   - "templates/*"
+overrides:
+  "@saleor/app-sdk": "file:/Users/alejandrovillapalos/WebstormProjects/saleor-app-sdk/dist"

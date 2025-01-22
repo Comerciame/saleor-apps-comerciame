@@ -1,5 +1,6 @@
 import { WebhookManifest } from "@saleor/app-sdk/types";
 import { Client } from "urql";
+
 import { createAppWebhookFromManifest } from "./create-app-webhook-from-manifest";
 import { createAppWebhookFromWebhookDetailsFragment } from "./create-app-webhook-from-webhook-details-fragment";
 import { getWebhookIdsAndManifestsToUpdate } from "./filters/get-webhook-ids-and-manifests-to-update";
@@ -31,6 +32,8 @@ export class WebhookUpdater {
 
   public update = async () => {
     const { dryRun, logger, client, webhookManifests, existingWebhooksData } = this.args;
+
+    logger.debug("Updating webhooks 1", this.args);
 
     logger.debug("Updating webhooks");
 

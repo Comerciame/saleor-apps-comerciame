@@ -1,12 +1,13 @@
 import { createManifestHandler } from "@saleor/app-sdk/handlers/next";
 import { AppManifest } from "@saleor/app-sdk/types";
+import { withOtel } from "@saleor/apps-otel";
 
 import packageJson from "../../../package.json";
-import { withOtel } from "@saleor/apps-otel";
 
 export default withOtel(
   createManifestHandler({
-    async manifestFactory({ appBaseUrl }) {
+    async manifestFactory({ request, appBaseUrl }) {
+      const dashboardUrl = (request.query.dashboardUrl as string) || "";
       const iframeBaseUrl = process.env.APP_IFRAME_BASE_URL ?? appBaseUrl;
       const apiBaseURL = process.env.APP_API_BASE_URL ?? appBaseUrl;
 
@@ -33,7 +34,7 @@ export default withOtel(
         permissions: ["MANAGE_ORDERS", "MANAGE_USERS", "MANAGE_GIFT_CARD"],
         requiredSaleorVersion: ">=3.19 <4",
         supportUrl: "https://github.com/saleor/apps/discussions",
-        tokenTargetUrl: `${apiBaseURL}/api/register`,
+        tokenTargetUrl: `${apiBaseURL}/api/register?dashboardUrl=${dashboardUrl}`,
         version: packageJson.version,
       };
 

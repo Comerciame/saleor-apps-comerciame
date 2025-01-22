@@ -1,18 +1,19 @@
+import { Client } from "urql";
+
+import { WebhookEventTypeAsyncEnum } from "../../../generated/graphql";
+import { createLogger } from "../../logger";
+import { giftCardSentWebhook } from "../../pages/api/webhooks/gift-card-sent";
 import { invoiceSentWebhook } from "../../pages/api/webhooks/invoice-sent";
+import { notifyWebhook } from "../../pages/api/webhooks/notify";
 import { orderCancelledWebhook } from "../../pages/api/webhooks/order-cancelled";
 import { orderConfirmedWebhook } from "../../pages/api/webhooks/order-confirmed";
 import { orderCreatedWebhook } from "../../pages/api/webhooks/order-created";
 import { orderFulfilledWebhook } from "../../pages/api/webhooks/order-fulfilled";
 import { orderFullyPaidWebhook } from "../../pages/api/webhooks/order-fully-paid";
-import { Client } from "urql";
-import { createAppWebhook, deleteAppWebhook, fetchAppWebhooks } from "./api-operations";
-import { notifyWebhook } from "../../pages/api/webhooks/notify";
-import { MessageEventTypes } from "../event-handlers/message-event-types";
-import { WebhookEventTypeAsyncEnum } from "../../../generated/graphql";
-import { giftCardSentWebhook } from "../../pages/api/webhooks/gift-card-sent";
-import { FeatureFlagService } from "../feature-flag-service/feature-flag-service";
 import { orderRefundedWebhook } from "../../pages/api/webhooks/order-refunded";
-import { createLogger } from "../../logger";
+import { MessageEventTypes } from "../event-handlers/message-event-types";
+import { FeatureFlagService } from "../feature-flag-service/feature-flag-service";
+import { createAppWebhook, deleteAppWebhook, fetchAppWebhooks } from "./api-operations";
 
 export const AppWebhooks = {
   giftCardSentWebhook,
@@ -51,15 +52,18 @@ export class WebhookManagementService {
   private appBaseUrl: string;
   private client: Client;
   private featureFlagService: FeatureFlagService;
+  private appId: string;
 
   constructor(args: {
     appBaseUrl: string;
     client: Client;
     featureFlagService: FeatureFlagService;
+    appId: string;
   }) {
     this.appBaseUrl = args.appBaseUrl;
     this.client = args.client;
     this.featureFlagService = args.featureFlagService;
+    this.appId = args.appId;
   }
 
   // Returns list of webhooks registered for the App in the Saleor instance
@@ -110,7 +114,7 @@ export class WebhookManagementService {
         asyncEvents: asyncWebhooks as WebhookEventTypeAsyncEnum[],
         isActive: true,
         name: webhookManifest.name,
-        targetUrl: webhookManifest.targetUrl,
+        targetUrl: webhookManifest.targetUrl + "?appId=" + this.appId,
         // Override empty queries to handle NOTIFY webhook
         query: webhookManifest.query === "{}" ? undefined : webhookManifest.query,
       },
