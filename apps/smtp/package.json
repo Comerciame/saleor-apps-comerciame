@@ -97,5 +97,9 @@
   "saleor": {
     "schemaVersion": "3.19"
   },
-  "type": "module"
+  "type": "module",
+  "engines": {
+    "pnpm": ">=9",
+    "node": ">=18"
+  }
 }
